@@ -9,6 +9,8 @@ namespace Game.Match3.Model
         private Piece[,] boardState;
         private readonly IPieceSpawner pieceSpawner;
 
+        public IPieceSpawner PieceSpawner => pieceSpawner;
+
         public static Board Create(int[,] definition, IPieceSpawner pieceSpawner)
         {
             return new Board(definition, pieceSpawner);

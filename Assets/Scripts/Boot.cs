@@ -25,7 +25,7 @@ namespace Game.Match3
 			var pieceSpawner = new PieceSpawner();
 			var board = Board.Create(boardDefinition, pieceSpawner);
 
-			boardRenderer.Initialize(board);
+			boardRenderer.Initialize(board, board.PieceSpawner);
 		}
 
 	}
