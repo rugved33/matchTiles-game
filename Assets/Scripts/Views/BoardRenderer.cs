@@ -17,6 +17,7 @@ namespace Game.Match3.ViewComponents
         private IPieceSpawner pieceSpawner;
         private Dictionary<Piece, VisualPiece> visualPieces = new Dictionary<Piece, VisualPiece>();
         private ResolveResult resolveResult;
+		private bool inputEnabled = true;
 
         public void Initialize(Board board, IPieceSpawner pieceSpawner)
         {
@@ -86,12 +87,13 @@ namespace Game.Match3.ViewComponents
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && inputEnabled)
             {
                 var pos = ScreenPosToLogicPos(Input.mousePosition.x, Input.mousePosition.y);
 
                 if (board.IsWithinBounds(pos.x, pos.y))
                 {
+					inputEnabled = false;
                     resolveResult = board.Resolve(pos.x, pos.y);
                     StartCoroutine(AnimateBoardChanges());
                 }
@@ -196,6 +198,8 @@ namespace Game.Match3.ViewComponents
 
                 yield return new WaitForSeconds(spawnDelay);
             }
+
+			inputEnabled = true;
         }
 
         private IEnumerator AnimatePieceFall(VisualPiece visualPiece, Piece piece, int targetX, int targetY)
