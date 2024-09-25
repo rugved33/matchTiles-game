@@ -10,13 +10,13 @@ namespace Game.Match3.ViewComponents
         [SerializeField] private PieceTypeDatabase pieceTypeDatabase;
         [SerializeField] private VisualPiece visualPiecePrefab;
         [SerializeField] private float moveSpeed = 5f; 
-        [SerializeField] private float spawnDelay = 0.2f;
+        [SerializeField] private float spawnDelay = 0.2f; 
         [SerializeField] private float spawnOffset = 2f; 
 
         private Board board;
         private IPieceSpawner pieceSpawner;
         private Dictionary<Piece, VisualPiece> visualPieces = new Dictionary<Piece, VisualPiece>();
-        private Dictionary<BoardPos, Piece> previousState = new Dictionary<BoardPos, Piece>();
+        private ResolveResult resolveResult;
 
         public void Initialize(Board board, IPieceSpawner pieceSpawner)
         {
@@ -92,46 +92,10 @@ namespace Game.Match3.ViewComponents
 
                 if (board.IsWithinBounds(pos.x, pos.y))
                 {
-                    SaveBoardState(); 
-                    board.Resolve(pos.x, pos.y);
+                    resolveResult = board.Resolve(pos.x, pos.y);
                     StartCoroutine(AnimateBoardChanges());
                 }
             }
-        }
-
-        private void SaveBoardState()
-        {
-            previousState.Clear();
-            foreach (var pieceInfo in board.IteratePieces())
-            {
-                if (pieceInfo.piece != null)
-                {
-                    previousState[new BoardPos(pieceInfo.pos.x, pieceInfo.pos.y)] = pieceInfo.piece;
-                }
-            }
-            Debug.Log($"Saved {previousState.Count} pieces in the previous state.");
-        }
-
-        private List<BoardPos> GetEmptyPositions()
-        {
-            List<BoardPos> emptyPositions = new List<BoardPos>();
-
-            for (int x = 0; x < board.Width; x++)
-            {
-                for (int y = 0; y < board.Height; y++)
-                {
-                    var piece = board.GetAt(x, y);
-
-                    // Check if the position is empty now but was previously filled
-                    if (piece == null && previousState.ContainsKey(new BoardPos(x, y)))
-                    {
-                        emptyPositions.Add(new BoardPos(x, y));
-                    }
-                }
-            }
-
-            Debug.Log($"Found {emptyPositions.Count} empty positions to fill.");
-            return emptyPositions;
         }
 
         private IEnumerator AnimateBoardChanges()
@@ -140,9 +104,8 @@ namespace Game.Match3.ViewComponents
 
             yield return AnimateFallingPieces();
 
-            var emptyPositions = GetEmptyPositions();
-
-            yield return SpawnAndAnimateNewPieces(emptyPositions);
+            // Use the resolveResult to spawn and animate new pieces based on CreationTime
+            yield return SpawnAndAnimateNewPieces(resolveResult);
         }
 
         private void DestroyClearedPieces()
@@ -178,11 +141,11 @@ namespace Game.Match3.ViewComponents
                 foreach (var pieceInfo in board.IteratePieces())
                 {
                     var piece = pieceInfo.piece;
-                    if (piece == null) continue; 
+                    if (piece == null) continue;
 
                     if (!visualPieces.ContainsKey(piece))
                     {
-                        continue; 
+                        continue;
                     }
 
                     var visualPieceObj = visualPieces[piece];
@@ -203,22 +166,33 @@ namespace Game.Match3.ViewComponents
             }
         }
 
-        private IEnumerator SpawnAndAnimateNewPieces(List<BoardPos> emptyPositions)
+        private IEnumerator SpawnAndAnimateNewPieces(ResolveResult resolveResult)
         {
-            foreach (var emptyPos in emptyPositions)
+
+            var newPieces = new List<KeyValuePair<Piece, ChangeInfo>>();
+
+            foreach (var change in resolveResult.changes)
             {
-                Debug.Log($"Spawning new piece at position ({emptyPos.x}, {emptyPos.y})");
+                if (change.Value.WasCreated)
+                {
+                    newPieces.Add(new KeyValuePair<Piece, ChangeInfo>(change.Key, change.Value));
+                }
+            }
 
-                var newPiece = board.CreatePiece(pieceSpawner.CreateBasicPiece(), emptyPos.x, emptyPos.y); 
-                Debug.Log($"New piece created with type {newPiece.type}");
+            newPieces.Sort((a, b) => a.Value.CreationTime.CompareTo(b.Value.CreationTime));
 
-                var visualPiece = CreateVisualPiece(newPiece); 
+            foreach (var newPieceEntry in newPieces)
+            {
+                var newPiece = newPieceEntry.Key;
+                var changeInfo = newPieceEntry.Value;
 
-                visualPiece.transform.localPosition = new Vector3(emptyPos.x, -(emptyPos.y + spawnOffset), -(emptyPos.y + spawnOffset));
+                var visualPiece = CreateVisualPiece(newPiece);
 
-                visualPieces[newPiece] = visualPiece; 
 
-                StartCoroutine(AnimatePieceFall(visualPiece, newPiece, emptyPos.x, emptyPos.y));
+                visualPiece.transform.localPosition = new Vector3(changeInfo.ToPos.x, -(changeInfo.ToPos.y + spawnOffset), -(changeInfo.ToPos.y + spawnOffset));
+                visualPieces[newPiece] = visualPiece;
+
+                yield return StartCoroutine(AnimatePieceFall(visualPiece, newPiece, changeInfo.ToPos.x, changeInfo.ToPos.y));
 
                 yield return new WaitForSeconds(spawnDelay);
             }
