@@ -153,7 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pieceTypeDatabase: {fileID: 114495281069537696, guid: cab66c87821bc4953989f2d4bdf384d5, type: 3}
   visualPiecePrefab: {fileID: 114334551203518046, guid: 7503254cc2e4e4ef4981b5f8aedfe466, type: 3}
-  moveSpeed: 5
+  moveSpeed: 20
   spawnDelay: 0
   spawnOffset: -2
 --- !u!4 &204886730
@@ -372,7 +372,7 @@ Camera:
   far clip plane: 10
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 20
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
