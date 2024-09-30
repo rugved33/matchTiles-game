@@ -83,6 +83,7 @@ namespace Game.Match3.ViewComponents
             {
                 Destroy(visualPiece.gameObject);
             }
+            visualPieces.Clear();
         }
 
         private void Update()
