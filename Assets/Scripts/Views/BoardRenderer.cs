@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using DG.Tweening;
 
 namespace Game.Match3.ViewComponents
 {
@@ -94,21 +95,36 @@ namespace Game.Match3.ViewComponents
 
                 if (board.IsWithinBounds(pos.x, pos.y))
                 {
-					inputEnabled = false;
-                    resolveResult = board.Resolve(pos.x, pos.y);
-                    StartCoroutine(AnimateBoardChanges());
+                    if(board.HasConnections(pos.x,pos.y))
+                    {
+                        inputEnabled = false;
+                        resolveResult = board.Resolve(pos.x, pos.y);
+                        StartCoroutine(AnimateBoardChanges());
+                    }
+                    else
+                    {
+                        ShakeWrongPiece(board.GetAt(pos.x,pos.y));
+                    }
                 }
             }
         }
 
         private IEnumerator AnimateBoardChanges()
         {
+
             DestroyClearedPieces();
 
             yield return AnimateFallingPieces();
 
-            // Use the resolveResult to spawn and animate new pieces based on CreationTime
+
             yield return SpawnAndAnimateNewPieces(resolveResult);
+        }
+
+        private void ShakeWrongPiece(Piece piece)
+        {
+           visualPieces.TryGetValue(piece, out VisualPiece visualPiece);
+            
+            visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
         }
 
         private void DestroyClearedPieces()

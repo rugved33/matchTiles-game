@@ -210,6 +210,15 @@ namespace Game.Match3.Model
             }
         }
 
+        public bool HasConnections(int x, int y)
+        {
+            if (GetConnected(x, y).Count > 1)
+            {
+                return true;
+            }
+            return false;
+        }
+        
         public ResolveResult MoveAndCreatePiecesUntilFull()
         {
 
