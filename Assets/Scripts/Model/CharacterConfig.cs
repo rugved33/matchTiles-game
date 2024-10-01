@@ -8,7 +8,7 @@ namespace Game.Match3.Model
     {
         public string Id;
         public string Name;
-        public Image Icom;
+        public Sprite Icon;
         public GameObject Prefab;
         public CharacterType CharacterType;
         public CharacterStats CharacterStats;
