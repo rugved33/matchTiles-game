@@ -18,6 +18,8 @@ namespace Game.Match3.Model
         public event System.Action<Character> OnDeath;
         public event System.Action<Character> OnRevived;
 
+        private CompositeDisposable disposables = new CompositeDisposable();
+
         public Character(CharacterConfig config)
         {
             Id = config.Id;
@@ -31,11 +33,13 @@ namespace Game.Match3.Model
             CurrentHealth.Value = MaxHealth;
             CurrentHealth
                 .Where(health => health <= 0)
-                .Subscribe(_ => OnDeath?.Invoke(this));
+                .Subscribe(_ => OnDeath?.Invoke(this))
+                .AddTo(disposables);
 
             CurrentHealth
                 .Where(health => health <= MaxHealth)
-                .Subscribe(_ => OnRevived?.Invoke(this));    
+                .Subscribe(_ => OnRevived?.Invoke(this))
+                .AddTo(disposables);    
         }
 
         public void TakeDamage(int amount)
@@ -64,6 +68,11 @@ namespace Game.Match3.Model
         public bool IsAlive()
         {
             return CurrentHealth.Value > 0;
+        }
+
+        public void Dispose()
+        {
+            disposables.Dispose();
         }
     }
 }
