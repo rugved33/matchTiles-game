@@ -2,7 +2,7 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 
-namespace Core
+namespace Scripts.Core
 {
     public class RuntimeInjector : MonoBehaviour
     {
