@@ -95,21 +95,7 @@ namespace Game.Match3.ViewComponents
             if (Input.GetMouseButtonDown(0) && inputEnabled)
             {
                 var pos = ScreenPosToLogicPos(Input.mousePosition.x, Input.mousePosition.y);
-
-                if (board.IsWithinBounds(pos.x, pos.y))
-                {
-                    if(board.HasConnections(pos.x,pos.y))
-                    {
-                        // ToggleInput(false);
-                        // resolveResult = board.Resolve(pos.x, pos.y);
-                        // AnimateBoardChanges(resolveResult);
-                        OnPieceClicked?.Invoke(pos.x, pos.y);
-                    }
-                    else
-                    {
-                        ShakePiece(board.GetAt(pos.x,pos.y));
-                    }
-                }
+                OnPieceClicked?.Invoke(pos.x, pos.y);
             }
         }
 
