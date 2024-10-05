@@ -1,47 +1,23 @@
-﻿using Game.Match3.Model;
+using Game.Match3.Model;
 using Game.Match3.ViewComponents;
+using Scripts.Core;
 using UnityEngine;
 
 namespace Game.Match3
 {
-
-	public class Boot : MonoBehaviour
+	public class Boot : MonoBehaviour, IDependencyProvider
 	{
 
-		[SerializeField] private BoardRenderer boardRenderer;
+		[Inject] private BoardRenderer boardRenderer;
+		[Inject] private LevelLoader levelLoader;
+		[Inject] private PieceSpawner pieceSpawner;
 
-		private LevelLoader levelLoader;
-		private void Start()
-		{
-			levelLoader = new LevelLoader();
+		private GameManager gameManager;
 
-			int[,] boardDefinition = levelLoader.GetCurrentLevelBoard();
-				
-			if (boardDefinition != null)
-            {
-                var pieceSpawner = new PieceSpawner();
-                var board = Board.Create(boardDefinition, pieceSpawner);
-                boardRenderer.Initialize(board, board.PieceSpawner);
-            }
-		}
-
-		public void NextLevel()
+        private void Start()
         {
-            int[,] nextBoard = levelLoader.LoadNextLevel();
-
-            if (nextBoard != null)
-            {
-                var pieceSpawner = new PieceSpawner();
-                var board = Board.Create(nextBoard, pieceSpawner);
-                boardRenderer.Initialize(board, board.PieceSpawner);
-            }
+            gameManager = new GameManager(boardRenderer,  levelLoader, pieceSpawner);
+            gameManager.StartGame();
         }
-
-		public void ResetProgress()
-        {
-            levelLoader.ResetProgress();
-        }
-
 	}
-
 }

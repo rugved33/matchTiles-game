@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using UnityEngine.UI;
 
 namespace Game.Match3.ViewComponents
 {
@@ -19,6 +20,8 @@ namespace Game.Match3.ViewComponents
         private Dictionary<Piece, VisualPiece> visualPieces = new Dictionary<Piece, VisualPiece>();
         private ResolveResult resolveResult;
 		private bool inputEnabled = true;
+
+        public event System.Action<int,int> OnPieceClicked;
 
         public void Initialize(Board board, IPieceSpawner pieceSpawner)
         {
@@ -97,30 +100,40 @@ namespace Game.Match3.ViewComponents
                 {
                     if(board.HasConnections(pos.x,pos.y))
                     {
-                        inputEnabled = false;
-                        resolveResult = board.Resolve(pos.x, pos.y);
-                        StartCoroutine(AnimateBoardChanges());
+                        // ToggleInput(false);
+                        // resolveResult = board.Resolve(pos.x, pos.y);
+                        // AnimateBoardChanges(resolveResult);
+                        OnPieceClicked?.Invoke(pos.x, pos.y);
                     }
                     else
                     {
-                        ShakeWrongPiece(board.GetAt(pos.x,pos.y));
+                        ShakePiece(board.GetAt(pos.x,pos.y));
                     }
                 }
             }
         }
 
-        private IEnumerator AnimateBoardChanges()
+        public void ToggleInput(bool value)
         {
+            inputEnabled = value;
+        }
 
+        public void AnimateBoardChanges(ResolveResult resolveResult)
+        {
+            this.resolveResult = resolveResult;
+            StartCoroutine(Co_AnimateBoardChanges());
+        }
+
+        private IEnumerator Co_AnimateBoardChanges()
+        {
             DestroyClearedPieces();
 
             yield return AnimateFallingPieces();
 
-
             yield return SpawnAndAnimateNewPieces(resolveResult);
         }
 
-        private void ShakeWrongPiece(Piece piece)
+        public void ShakePiece(Piece piece)
         {
            visualPieces.TryGetValue(piece, out VisualPiece visualPiece);
             
@@ -216,7 +229,7 @@ namespace Game.Match3.ViewComponents
                 yield return new WaitForSeconds(spawnDelay);
             }
 
-			inputEnabled = true;
+			ToggleInput(true);
         }
 
         private IEnumerator AnimatePieceFall(VisualPiece visualPiece, Piece piece, int targetX, int targetY)
