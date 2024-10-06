@@ -31,7 +31,6 @@ namespace Game.Match3
         {
             GUILayout.Label("Level Designer", EditorStyles.boldLabel);
 
-            // Set Rows and Columns
             rows = EditorGUILayout.IntField("Rows", rows);
             columns = EditorGUILayout.IntField("Columns", columns);
 
@@ -40,7 +39,6 @@ namespace Game.Match3
                 InitializeBoard();
             }
 
-            // Draw the board as an editable grid
             for (int y = 0; y < rows; y++)
             {
                 GUILayout.BeginHorizontal();
@@ -51,11 +49,9 @@ namespace Game.Match3
                 GUILayout.EndHorizontal();
             }
 
-            // Save and Load Buttons
             GUILayout.Space(10);
             GUILayout.Label("Save/Load Level", EditorStyles.boldLabel);
 
-            // Input field for the file name
             fileName = EditorGUILayout.TextField("File Name", fileName);
 
             if (GUILayout.Button("Save Level"))
@@ -71,7 +67,6 @@ namespace Game.Match3
 
         private void SaveLevel()
         {
-            // Ensure the filename is valid and append ".txt" extension if necessary
             if (string.IsNullOrEmpty(fileName))
             {
                 Debug.LogError("Please specify a valid file name.");
@@ -83,10 +78,8 @@ namespace Game.Match3
                 fileName += ".txt";
             }
 
-            // Define the path to save the file
             string filePath = Application.dataPath + "/Resources/Levels/" + fileName;
 
-            // Save the board definition to the file
             using (StreamWriter writer = new StreamWriter(filePath))
             {
                 writer.WriteLine(rows);
@@ -107,7 +100,6 @@ namespace Game.Match3
 
         private void LoadLevel()
         {
-            // Ensure the filename is valid and append ".txt" extension if necessary
             if (string.IsNullOrEmpty(fileName))
             {
                 Debug.LogError("Please specify a valid file name.");
@@ -119,10 +111,8 @@ namespace Game.Match3
                 fileName += ".txt";
             }
 
-            // Define the path to load the file from
             string filePath = Application.dataPath + "/Resources/Levels/" + fileName;
 
-            // Load the board definition from the file
             if (File.Exists(filePath))
             {
                 string[] lines = File.ReadAllLines(filePath);

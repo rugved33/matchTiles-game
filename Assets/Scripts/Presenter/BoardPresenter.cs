@@ -37,8 +37,9 @@ namespace Game.Match3.Presenter
 
         private void ResolveBoard(int x, int y)
         {
-            var resolveResult = gameState.Board.Resolve(x, y); 
-            boardRenderer.AnimateBoardChanges(resolveResult);
+            //todo use command here
+            gameState.ResolveBoard(x, y); 
+            boardRenderer.AnimateBoardChanges(gameState.ResolveResult);
         }
 
 
