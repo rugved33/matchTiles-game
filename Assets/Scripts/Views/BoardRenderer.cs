@@ -2,8 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
-using DG.Tweening;
-using UnityEngine.UI;
+
 
 namespace Game.Match3.ViewComponents
 {
@@ -21,7 +20,7 @@ namespace Game.Match3.ViewComponents
         private List<Vector3> destroyedTilePositions = new List<Vector3>();
         private ResolveResult resolveResult;
 		private bool inputEnabled = true;
-
+        private const float FallDelay = 0.2f;
         public event System.Action<int,int> OnPieceClicked;
 
         public void Initialize(Board board, IPieceSpawner pieceSpawner)
@@ -123,8 +122,7 @@ namespace Game.Match3.ViewComponents
         public void ShakePiece(Piece piece)
         {
            visualPieces.TryGetValue(piece, out VisualPiece visualPiece);
-            
-           visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
+           visualPiece.DOShakePosition();
         }
 
         private void DestroyClearedPieces()
@@ -163,16 +161,14 @@ namespace Game.Match3.ViewComponents
 
                     if (visualPiece.transform.localPosition.y > destroyedPos.y && visualPiece.transform.localPosition.x == destroyedPos.x)
                     {
-                        visualPiece.transform
-                            .DOJump(visualPiece.transform.localPosition, 1f, 1, 0.2f) 
-                            .SetEase(Ease.OutQuad);
-                            
+                        visualPiece.DoJump();
                         anyPieceMoved = true;
                     }
                 }
             }
 
-            yield return new WaitForSeconds(0.2f);
+            yield return new WaitForSeconds(FallDelay);
+
             while (anyPieceMoved)
             {
                 anyPieceMoved = false;
