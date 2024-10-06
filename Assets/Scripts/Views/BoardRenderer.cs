@@ -92,7 +92,7 @@ namespace Game.Match3.ViewComponents
 
         private void Update()
         {
-            if (Input.GetMouseButtonDown(0) && inputEnabled)
+            if (Input.GetMouseButtonUp(0) && inputEnabled)
             {
                 var pos = ScreenPosToLogicPos(Input.mousePosition.x, Input.mousePosition.y);
                 OnPieceClicked?.Invoke(pos.x, pos.y);
@@ -245,7 +245,8 @@ namespace Game.Match3.ViewComponents
             {
                 visualPiece.DOShakePosition();
             }
-
+            yield return new WaitForSeconds(FallDelay);
+            ToggleInput(true);
         }
 
         private IEnumerator AnimatePieceFall(VisualPiece visualPiece, Piece piece, int targetX, int targetY)
@@ -262,7 +263,6 @@ namespace Game.Match3.ViewComponents
                 yield return null; 
             }
 
-            ToggleInput(true);
             Debug.Log($"Piece {piece.type} reached target position ({targetX}, {targetY})");
         }
     }
