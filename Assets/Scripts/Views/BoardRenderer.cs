@@ -127,11 +127,6 @@ namespace Game.Match3.ViewComponents
            visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
         }
 
-        public void JumpPiece(VisualPiece visualPiece)
-        {
-            visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
-        }
-
         private void DestroyClearedPieces()
         {
             destroyedTilePositions.Clear();
