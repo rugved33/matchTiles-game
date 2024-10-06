@@ -153,7 +153,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pieceTypeDatabase: {fileID: 114495281069537696, guid: cab66c87821bc4953989f2d4bdf384d5, type: 3}
   visualPiecePrefab: {fileID: 114334551203518046, guid: 7503254cc2e4e4ef4981b5f8aedfe466, type: 3}
-  moveSpeed: 200
+  moveSpeed: 50
   spawnDelay: 0
   spawnOffset: -2
 --- !u!4 &204886730
