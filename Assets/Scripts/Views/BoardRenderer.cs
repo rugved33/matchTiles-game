@@ -246,7 +246,6 @@ namespace Game.Match3.ViewComponents
                 visualPiece.DOShakePosition();
             }
 
-			ToggleInput(true);
         }
 
         private IEnumerator AnimatePieceFall(VisualPiece visualPiece, Piece piece, int targetX, int targetY)
@@ -263,6 +262,7 @@ namespace Game.Match3.ViewComponents
                 yield return null; 
             }
 
+            ToggleInput(true);
             Debug.Log($"Piece {piece.type} reached target position ({targetX}, {targetY})");
         }
     }
