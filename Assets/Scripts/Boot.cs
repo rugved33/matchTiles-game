@@ -14,10 +14,10 @@ namespace Game.Match3
 
 		private GameManager gameManager;
 
-        private void Start()
-        {
-            gameManager = new GameManager(boardRenderer,  levelLoader, pieceSpawner);
-            gameManager.StartGame();
-        }
+		private void Start()
+		{
+			gameManager = new GameManager(boardRenderer, levelLoader, pieceSpawner);
+			gameManager.StartGame();
+		}
 	}
 }
