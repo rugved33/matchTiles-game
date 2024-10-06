@@ -1,6 +1,4 @@
-using Game.Match3.Model;
-
-namespace Game.Match3
+namespace Game.Match3.Model
 {
     [System.Serializable]
     public class GameState

@@ -169,6 +169,8 @@ namespace Game.Match3.ViewComponents
 
             yield return new WaitForSeconds(FallDelay);
 
+            List<VisualPiece> movedPieces = new List<VisualPiece>();
+
             while (anyPieceMoved)
             {
                 anyPieceMoved = false;
@@ -194,10 +196,16 @@ namespace Game.Match3.ViewComponents
                             targetPosition,
                             moveSpeed * Time.deltaTime
                         );
+                        movedPieces.Add(visualPieceObj);
                     }
                 }
 
-                yield return null; 
+                yield return null;
+            }
+
+            foreach (var visualPiece in movedPieces)
+            {
+                visualPiece.DOShakePosition();
             }
         }
 
