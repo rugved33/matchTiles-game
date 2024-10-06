@@ -213,6 +213,7 @@ namespace Game.Match3.ViewComponents
         {
 
             var newPieces = new List<KeyValuePair<Piece, ChangeInfo>>();
+            List<VisualPiece> spawnedPieces = new List<VisualPiece>();
 
             foreach (var change in resolveResult.changes)
             {
@@ -230,7 +231,7 @@ namespace Game.Match3.ViewComponents
                 var changeInfo = newPieceEntry.Value;
 
                 var visualPiece = CreateVisualPiece(newPiece);
-
+                spawnedPieces.Add(visualPiece);
 
                 visualPiece.transform.localPosition = new Vector3(changeInfo.ToPos.x, -(changeInfo.ToPos.y + spawnOffset), -(changeInfo.ToPos.y + spawnOffset));
                 visualPieces[newPiece] = visualPiece;
@@ -238,6 +239,11 @@ namespace Game.Match3.ViewComponents
                 yield return StartCoroutine(AnimatePieceFall(visualPiece, newPiece, changeInfo.ToPos.x, changeInfo.ToPos.y));
 
                 yield return new WaitForSeconds(spawnDelay);
+            }
+
+            foreach (var visualPiece in spawnedPieces)
+            {
+                visualPiece.DOShakePosition();
             }
 
 			ToggleInput(true);
