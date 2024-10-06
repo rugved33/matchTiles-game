@@ -18,6 +18,7 @@ namespace Game.Match3.ViewComponents
         private Board board;
         private IPieceSpawner pieceSpawner;
         private Dictionary<Piece, VisualPiece> visualPieces = new Dictionary<Piece, VisualPiece>();
+        private List<Vector3> destroyedTilePositions = new List<Vector3>();
         private ResolveResult resolveResult;
 		private bool inputEnabled = true;
 
@@ -123,11 +124,17 @@ namespace Game.Match3.ViewComponents
         {
            visualPieces.TryGetValue(piece, out VisualPiece visualPiece);
             
+           visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
+        }
+
+        public void JumpPiece(VisualPiece visualPiece)
+        {
             visualPiece.transform.DOShakePosition(0.5f,0.1f,10);
         }
 
         private void DestroyClearedPieces()
         {
+            destroyedTilePositions.Clear();
             var piecesToDestroy = new List<Piece>();
 
             foreach (var pieceInfo in visualPieces)
@@ -135,6 +142,7 @@ namespace Game.Match3.ViewComponents
                 if (pieceInfo.Key == null || !board.TryGetPiecePos(pieceInfo.Key, out _, out _))
                 {
                     piecesToDestroy.Add(pieceInfo.Key);
+                    destroyedTilePositions.Add(visualPieces[pieceInfo.Key].transform.localPosition);
                 }
             }
 
@@ -152,6 +160,24 @@ namespace Game.Match3.ViewComponents
         {
             bool anyPieceMoved = true;
 
+            foreach (var destroyedPos in destroyedTilePositions)
+            {
+                foreach (var pieceInfo in visualPieces)
+                {
+                    var visualPiece = pieceInfo.Value;
+
+                    if (visualPiece.transform.localPosition.y > destroyedPos.y && visualPiece.transform.localPosition.x == destroyedPos.x)
+                    {
+                        visualPiece.transform
+                            .DOJump(visualPiece.transform.localPosition, 1f, 1, 0.2f) 
+                            .SetEase(Ease.OutQuad);
+                            
+                        anyPieceMoved = true;
+                    }
+                }
+            }
+
+            yield return new WaitForSeconds(0.2f);
             while (anyPieceMoved)
             {
                 anyPieceMoved = false;
